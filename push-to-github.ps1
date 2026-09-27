@@ -1,16 +1,36 @@
-# Script to push changes to GitHub and trigger automatic deployment
+<#
+.SYNOPSIS
+    Automated Git version control and GitHub push script for AlphaSelector India.
+
+.DESCRIPTION
+    Stages all modified files, commits changes with an optional custom message,
+    verifies or attaches the GitHub remote repository origin, and pushes to the 'main' branch.
+    Pushing to 'main' automatically triggers the GitHub Actions CI/CD deployment pipeline.
+
+.PARAMETER CommitMessage
+    Optional commit message describing changes. Defaults to 'Update AlphaSelector India App'.
+
+.PARAMETER RepoUrl
+    Optional GitHub repository clone URL if origin is not yet configured.
+
+.EXAMPLE
+    .\push-to-github.ps1 -CommitMessage "Add comprehensive docstrings to all modules"
+#>
 param(
+    [string]$CommitMessage = "Update AlphaSelector India App",
     [string]$RepoUrl = ""
 )
 
+# Ensure Git is accessible in current execution environment
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
+# Verify existing git remote origin
 $currentRemote = git remote get-url origin 2>$null
 
 if (-not $currentRemote) {
     if (-not $RepoUrl) {
         Write-Host "No GitHub remote found for this project." -ForegroundColor Yellow
-        $RepoUrl = Read-Host "Enter your GitHub repository URL (e.g., https://github.com/your-username/StockPicking-App.git)"
+        $RepoUrl = Read-Host "Enter your GitHub repository URL (e.g., https://github.com/diwakar2k/StockPicking-App.git)"
     }
 
     if ($RepoUrl) {
@@ -24,7 +44,7 @@ if (-not $currentRemote) {
 
 Write-Host "Pushing code to GitHub on 'main' branch..." -ForegroundColor Cyan
 git add .
-git commit -m "Update AlphaSelector India App" 2>$null
+git commit -m "$CommitMessage" 2>$null
 git branch -M main
 git push -u origin main
 

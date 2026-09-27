@@ -1,3 +1,10 @@
+/**
+ * @file IndustrySelector.tsx
+ * @description Sector selection and scope configuration screen for AlphaSelector India.
+ * Enables investors to activate context-aware evaluation models across 6 major Indian industries
+ * (Technology & SaaS, BFSI, Healthcare & Pharma, FMCG, Energy, Auto & Manufacturing).
+ */
+
 import React from 'react';
 import { 
   Cpu, 
@@ -8,22 +15,34 @@ import {
   Car, 
   CheckCircle2, 
   ArrowRight, 
-  Sparkles,
-  Layers,
-  HelpCircle
+  Sparkles, 
+  Layers, 
+  HelpCircle 
 } from 'lucide-react';
-import { IndustryId, Market } from '../types';
+import { IndustryId } from '../types';
 import { INDUSTRIES } from '../data/industryCriteria';
 import { STOCKS_DATA } from '../data/stocksData';
 
+/**
+ * Properties for the IndustrySelector component.
+ */
 interface IndustrySelectorProps {
+  /** Array of currently chosen industry sector IDs */
   selectedIndustries: IndustryId[];
+  /** Callback fired to toggle an industry's selected state */
   onToggleIndustry: (id: IndustryId) => void;
+  /** Callback to select all available industry sectors */
   onSelectAll: () => void;
+  /** Callback to clear all industries except the first default */
   onClear: () => void;
+  /** Callback to advance to the criteria configuration screen */
   onProceed: () => void;
 }
 
+/**
+ * IndustrySelector presents interactive sector cards outlining key evaluation philosophies,
+ * stock universe counts, and specialized metric summaries.
+ */
 export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
   selectedIndustries,
   onToggleIndustry,
@@ -31,7 +50,9 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
   onClear,
   onProceed
 }) => {
-  // Helper to map icon names to Lucide icons
+  /**
+   * Resolves the corresponding Lucide icon component by name string.
+   */
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cpu': return <Cpu className="w-5 h-5 text-blue-400" />;
@@ -44,6 +65,9 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
     }
   };
 
+  /**
+   * Computes the number of candidate stocks belonging to a specific industry.
+   */
   const getStockCountForIndustry = (indId: IndustryId) => {
     return STOCKS_DATA.filter(s => s.industry === indId).length;
   };
@@ -99,13 +123,13 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
         <div className="flex items-center space-x-2.5">
           <button
             onClick={onSelectAll}
-            className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
+            className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700 cursor-pointer"
           >
             Select All
           </button>
           <button
             onClick={onClear}
-            className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800"
+            className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800 cursor-pointer"
           >
             Clear
           </button>
@@ -115,7 +139,7 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
             disabled={selectedIndustries.length === 0}
             className={`flex items-center space-x-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               selectedIndustries.length > 0
-                ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20'
+                ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 cursor-pointer'
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed'
             }`}
           >
@@ -206,7 +230,7 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
         })}
       </div>
 
-      {/* Bottom Sticky CTA on Mobile / Action Bar */}
+      {/* Bottom Sticky Action Bar */}
       {selectedIndustries.length > 0 && (
         <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center justify-between">
           <div className="text-xs text-slate-300">
@@ -214,7 +238,7 @@ export const IndustrySelector: React.FC<IndustrySelectorProps> = ({
           </div>
           <button
             onClick={onProceed}
-            className="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20"
+            className="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
           >
             <span>Proceed to Criteria Engine</span>
             <ArrowRight className="w-4 h-4" />

@@ -1,5 +1,21 @@
+/**
+ * @file stocksData.ts
+ * @description Curated baseline fundamental universe for the Indian equity markets (NSE / BSE).
+ *
+ * Characteristics:
+ * - Market: National Stock Exchange (NSE) and Bombay Stock Exchange (BSE).
+ * - Currency & Units: Quoted prices in INR (₹), Market Capitalization in Crores (₹ Cr).
+ * - Ticker Convention: Standard Yahoo Finance / NSE suffix syntax (e.g. `TCS.NS`, `HDFCBANK.NS`).
+ * - Sector Segments: 6 specialized verticals with bespoke financial metrics.
+ * - Expected CAGR: 3-to-5 year forward expected return based on historical ROE, earnings reinvestment,
+ *   and forward structural economic growth.
+ */
+
 import { Stock } from '../types';
 
+/**
+ * Default seed universe of Indian blue-chip and high-conviction growth equities.
+ */
 export const STOCKS_DATA: Stock[] = [
   // ==========================================
   // INDIAN EQUITIES ONLY (NSE / BSE in ₹)

@@ -1,18 +1,16 @@
+/**
+ * @file CorpusForecaster.tsx
+ * @description Wealth compounding simulator and corpus forecasting dashboard for AlphaSelector India.
+ * Simulates portfolio growth over 1 to 30 years using monthly compounding, SIP inflows, annual salary
+ * step-ups, inflation purchasing power deflation, bear/bull sensitivity spreads, and milestone tracking.
+ */
+
 import React, { useState, useMemo } from 'react';
 import { 
   TrendingUp, 
-  DollarSign, 
-  Calendar, 
-  Sparkles, 
-  Layers, 
-  ShieldAlert, 
-  Flame, 
   Download, 
-  HelpCircle,
-  Percent,
-  CheckCircle,
-  ArrowUpRight,
-  Clock
+  CheckCircle, 
+  Clock 
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -24,17 +22,25 @@ import {
   ResponsiveContainer, 
   Line 
 } from 'recharts';
-import { ForecastInput, Market } from '../types';
+import { ForecastInput } from '../types';
 import { calculateForecast, formatCurrency } from '../utils/calculator';
 
+/**
+ * Properties for the CorpusForecaster component.
+ */
 interface CorpusForecasterProps {
+  /** Baseline expected return percentage computed from the weighted portfolio basket */
   defaultCAGR: number;
 }
 
+/**
+ * CorpusForecaster provides an interactive compounding simulator with dynamic controls,
+ * Recharts visualization, sensitivity matrices, milestone tracking, and CSV cashflow export.
+ */
 export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
   defaultCAGR
 }) => {
-  // Initial default states based on Indian market
+  // Initial default states calibrated for Indian financial planning
   const [lumpsum, setLumpsum] = useState<number>(100000);
   const [monthlySip, setMonthlySip] = useState<number>(15000);
   const [annualStepUpPct, setAnnualStepUpPct] = useState<number>(10);
@@ -44,7 +50,7 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
   const [adjustForInflation, setAdjustForInflation] = useState<boolean>(false);
   const [showTable, setShowTable] = useState<boolean>(false);
 
-  // Compute forecast
+  // Compute multi-year forecast input configuration
   const forecastInput: ForecastInput = useMemo(() => ({
     lumpsum,
     monthlySip,
@@ -55,11 +61,12 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
     adjustForInflation
   }), [lumpsum, monthlySip, annualStepUpPct, years, expectedReturnPct, inflationPct, adjustForInflation]);
 
+  // Execute mathematical compounding simulation
   const summary = useMemo(() => {
     return calculateForecast(forecastInput, 'IN');
   }, [forecastInput]);
 
-  // Chart data formatting
+  // Transform yearly cashflows into chart-compatible data objects
   const chartData = useMemo(() => {
     return summary.yearlyData.map((d) => ({
       year: `Year ${d.year}`,
@@ -72,11 +79,13 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
     }));
   }, [summary]);
 
-  // Quick preset buttons for Indian Rupees (₹)
+  // Quick preset shortcuts for Indian Rupee amounts (₹)
   const quickLumpsumOptions = [0, 50000, 100000, 500000, 1000000];
   const quickSipOptions = [5000, 10000, 15000, 25000, 50000];
 
-  // CSV export handler
+  /**
+   * Generates and downloads a CSV export containing the full year-by-year cashflow schedule.
+   */
   const handleExportCSV = () => {
     const headers = ['Year', 'Total Invested (INR)', 'Nominal Corpus (INR)', 'Real (Inflation Adjusted INR)', 'Annual Inflow (INR)', 'Annual Growth Gain (INR)'];
     const rows = summary.yearlyData.map(d => [
@@ -151,7 +160,7 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
                   <button
                     key={opt}
                     onClick={() => setLumpsum(opt)}
-                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-colors ${
+                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-colors cursor-pointer ${
                       lumpsum === opt
                         ? 'bg-emerald-500 text-slate-950 font-bold'
                         : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -185,7 +194,7 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
                   <button
                     key={opt}
                     onClick={() => setMonthlySip(opt)}
-                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-colors ${
+                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-colors cursor-pointer ${
                       monthlySip === opt
                         ? 'bg-emerald-500 text-slate-950 font-bold'
                         : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -269,7 +278,7 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
               {defaultCAGR > 0 && (
                 <button
                   onClick={() => setExpectedReturnPct(Number(defaultCAGR.toFixed(1)))}
-                  className="text-[11px] text-emerald-400 hover:text-emerald-300 underline font-medium flex items-center space-x-1"
+                  className="text-[11px] text-emerald-400 hover:text-emerald-300 underline font-medium flex items-center space-x-1 cursor-pointer"
                 >
                   <span>Sync with Basket Weighted CAGR (+{defaultCAGR.toFixed(1)}%)</span>
                 </button>
@@ -524,14 +533,14 @@ export const CorpusForecaster: React.FC<CorpusForecasterProps> = ({
           <div className="flex items-center justify-between pt-2">
             <button
               onClick={() => setShowTable(!showTable)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
             >
               {showTable ? 'Hide Year-by-Year Table' : 'Show Year-by-Year Cashflows'}
             </button>
 
             <button
               onClick={handleExportCSV}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>

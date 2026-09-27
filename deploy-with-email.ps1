@@ -1,4 +1,17 @@
-# Script to publish StockPicking App to Surge with your verified email
+<#
+.SYNOPSIS
+    Automated production build and Surge deployment script for AlphaSelector India.
+
+.DESCRIPTION
+    Builds the production bundle using Vite and publishes static assets to Surge.sh
+    with custom subdomain routing and private link access.
+
+.PARAMETER Domain
+    The Surge subdomain to deploy to. Defaults to 'alpha-selector-india-feedback.surge.sh'.
+
+.EXAMPLE
+    .\deploy-with-email.ps1 -Domain "alpha-selector-india-preview.surge.sh"
+#>
 param(
     [string]$Domain = "alpha-selector-india-feedback.surge.sh"
 )
@@ -14,7 +27,7 @@ Write-Host ""
 # Ensure production build is up to date
 npm run build
 
-# Run surge
+# Run surge static deployment
 npx surge ./dist $Domain
 
 Write-Host ""

@@ -1,10 +1,16 @@
+/**
+ * @file CriteriaConfigurator.tsx
+ * @description Dynamic criteria fine-tuning and strategy preset selector for AlphaSelector India.
+ * Allows investors to calibrate metric threshold sliders (e.g. Rule of 40, NIM, ROCE, FCF Yield)
+ * with industry median benchmark references, or apply curated 1-click strategy presets.
+ */
+
 import React from 'react';
 import { 
   Sliders, 
   HelpCircle, 
   Sparkles, 
   RotateCcw, 
-  CheckCircle, 
   TrendingUp, 
   ShieldCheck, 
   Tag, 
@@ -19,16 +25,29 @@ import {
 import { IndustryId, MetricDefinition, StrategyPreset } from '../types';
 import { INDUSTRY_CRITERIA, INDUSTRIES } from '../data/industryCriteria';
 
+/**
+ * Properties for the CriteriaConfigurator component.
+ */
 interface CriteriaConfiguratorProps {
+  /** Array of industries enabled by the investor */
   selectedIndustries: IndustryId[];
+  /** Identifier of the industry currently in active focus for tuning */
   activeIndustry: IndustryId;
+  /** Callback fired when user switches the active sector tuning tab */
   onSelectActiveIndustry: (id: IndustryId) => void;
+  /** Current threshold mapping for each industry and metric ID */
   thresholds: Record<IndustryId, Record<string, number>>;
+  /** Callback to update a single metric threshold value */
   onUpdateThreshold: (industryId: IndustryId, metricId: string, value: number) => void;
+  /** Callback to apply a predefined strategy preset */
   onApplyPreset: (industryId: IndustryId, preset: StrategyPreset) => void;
+  /** Callback to reset an industry's thresholds back to default baselines */
   onResetIndustry: (industryId: IndustryId) => void;
 }
 
+/**
+ * CriteriaConfigurator provides an interactive parameter adjustment studio for sector metrics.
+ */
 export const CriteriaConfigurator: React.FC<CriteriaConfiguratorProps> = ({
   selectedIndustries,
   activeIndustry,
@@ -50,6 +69,9 @@ export const CriteriaConfigurator: React.FC<CriteriaConfiguratorProps> = ({
   const currentIndustryInfo = INDUSTRIES.find(i => i.id === activeIndustry);
   const currentThresholds = thresholds[activeIndustry] || {};
 
+  /**
+   * Resolves the corresponding Lucide icon component for a strategy preset.
+   */
   const getPresetIcon = (iconName: string) => {
     switch (iconName) {
       case 'Rocket': return <Rocket className="w-3.5 h-3.5 text-blue-400" />;
@@ -80,7 +102,7 @@ export const CriteriaConfigurator: React.FC<CriteriaConfiguratorProps> = ({
             <button
               key={indId}
               onClick={() => onSelectActiveIndustry(indId)}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                 isActive
                   ? 'bg-slate-800 text-emerald-400 border border-emerald-500/40 shadow-sm'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent'
@@ -107,7 +129,7 @@ export const CriteriaConfigurator: React.FC<CriteriaConfiguratorProps> = ({
 
           <button
             onClick={() => onResetIndustry(activeIndustry)}
-            className="self-start sm:self-auto flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 transition-colors"
+            className="self-start sm:self-auto flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Defaults</span>
@@ -125,7 +147,7 @@ export const CriteriaConfigurator: React.FC<CriteriaConfiguratorProps> = ({
                 <button
                   key={preset.id}
                   onClick={() => onApplyPreset(activeIndustry, preset)}
-                  className="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-950/70 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/40 text-left transition-all group"
+                  className="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-950/70 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/40 text-left transition-all group cursor-pointer"
                 >
                   <div className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 group-hover:border-slate-700 shrink-0 mt-0.5">
                     {getPresetIcon(preset.icon)}

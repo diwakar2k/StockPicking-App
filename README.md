@@ -31,17 +31,95 @@ An institutional-grade, industry-adaptive stock screener and compounding wealth 
    - Persistent `localStorage` database.
    - Built-in Quarterly Results Editor & 1-Click Live Price Sync.
 
+---
+
+## Project Structure & Architecture
+
+```
+StockPicking App/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # GitHub Actions CI/CD: automated build and deploy to GitHub Pages
+├── public/                         # Static assets (favicons, SVG icons)
+├── src/
+│   ├── assets/                     # Media and vector assets
+│   ├── components/
+│   │   ├── AccessGate.tsx          # Private evaluation gatekeeper (link-only auth)
+│   │   ├── CorpusForecaster.tsx    # Multi-year compounding simulation & Recharts visualization
+│   │   ├── CriteriaConfigurator.tsx# Dynamic sector sliders & 1-click strategy presets
+│   │   ├── DataUpdateModal.tsx     # Quarterly results editor & local sync management
+│   │   ├── Header.tsx              # Top navigation & quick workflow steps
+│   │   ├── IndustrySelector.tsx    # Sector activation cards & universe counts
+│   │   ├── PortfolioBasket.tsx     # Investment basket synthesizer & weighted fundamentals
+│   │   ├── ShareModal.tsx          # Auto-unlock share link generator & copy dialog
+│   │   ├── StockDetailModal.tsx    # In-depth fundamental diagnostics & pass/fail analysis
+│   │   └── StockScreener.tsx       # Real-time multi-criteria screening table
+│   ├── data/
+│   │   ├── industryCriteria.ts     # Sector metric definitions, benchmarks, and strategy presets
+│   │   └── stocksData.ts           # Curated seed universe of Indian blue-chip & growth equities
+│   ├── types/
+│   │   └── index.ts                # TypeScript domain models and interface contracts
+│   ├── utils/
+│   │   ├── calculator.ts           # Financial scoring algorithms & compounding mathematics
+│   │   └── dataStorage.ts          # LocalStorage persistence & accounting governance standards
+│   ├── App.tsx                     # Application root orchestrator and state coordinator
+│   ├── index.css                   # Tailwind CSS v4 styling rules
+│   └── main.tsx                    # React 19 bootstrap entry point
+├── deploy-with-email.ps1           # 1-click Surge deployment script
+├── push-to-github.ps1              # Automated git version control & GitHub push script
+├── vite.config.ts                  # Vite build configuration with relative base paths
+└── package.json                    # Project dependencies and npm lifecycle scripts
+```
+
+---
+
 ## Running Locally
 
 ```bash
-# Navigate to the folder
-cd "C:\Users\diwak\StockPicking App"
+# 1. Install dependencies
+npm install
 
-# Start the development server
+# 2. Start the local development server
 npm run dev
 
-# Or run the production preview server
+# 3. Build for production and verify type safety
+npm run build
+
+# 4. Preview the production build locally
 npm run preview
 ```
 
 Open [http://localhost:5173/](http://localhost:5173/) in your web browser.
+
+---
+
+## Version Control & GitHub Integration
+
+This project is hosted on GitHub:
+- **Repository**: [https://github.com/diwakar2k/StockPicking-App](https://github.com/diwakar2k/StockPicking-App)
+- **Branch**: `main`
+- **CI/CD**: GitHub Actions workflow (`.github/workflows/deploy.yml`) builds and deploys every push to GitHub Pages automatically.
+
+### Recommended Version Control Workflow for Future Edits
+
+Whenever you make edits to this project:
+
+1. **Verify Build & Type Safety**:
+   ```bash
+   npm run build
+   ```
+
+2. **Push Changes to GitHub**:
+   Use the included automated PowerShell push script:
+   ```powershell
+   .\push-to-github.ps1 -CommitMessage "Describe your edits here"
+   ```
+   Or use standard Git commands:
+   ```bash
+   git add .
+   git commit -m "Describe your edits here"
+   git push origin main
+   ```
+
+3. **Automatic Deployment**:
+   Once pushed, GitHub Actions immediately checks out the code, executes `npm ci` and `npm run build`, and publishes the latest version to GitHub Pages.

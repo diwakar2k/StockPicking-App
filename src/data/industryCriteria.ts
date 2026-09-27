@@ -1,5 +1,25 @@
+/**
+ * @file industryCriteria.ts
+ * @description Sector-adaptive screening criteria, metric definitions, and strategy presets
+ * for the Indian stock market (NSE / BSE).
+ *
+ * Design Philosophy:
+ * Universal screeners fail because capital structures and business models differ drastically across industries:
+ * - BFSI: Banks rely on debt as raw inventory; evaluating them by standard Debt/Equity or EBITDA is fundamentally flawed.
+ *   Instead, Net Interest Margin (NIM), Net NPA, and Capital Adequacy (CAR) dictate balance sheet health.
+ * - Technology & SaaS: Traditional P/E penalizes high-reinvestment growth models.
+ *   The Rule of 40 (Growth + FCF Margin) and EV/Sales capture true compounding potential.
+ * - Healthcare & Pharma: Clinical pipelines require sustained R&D reinvestment and operating margin cushions.
+ * - FMCG: Brand moats, negative working capital (Cash Conversion Cycle), and high ROCE separate quality compounders.
+ * - Energy & Utilities: Asset-heavy, regulated businesses require Free Cash Flow Yield and EV/EBITDA multiples.
+ * - Auto & Manufacturing: Cyclical demand requires strict monitoring of fixed asset turnover and balance sheet leverage.
+ */
+
 import { IndustryCriteriaConfig, IndustryInfo, IndustryId } from '../types';
 
+/**
+ * List of supported industry sectors in the Indian equity universe.
+ */
 export const INDUSTRIES: IndustryInfo[] = [
   {
     id: 'tech',
@@ -63,7 +83,14 @@ export const INDUSTRIES: IndustryInfo[] = [
   }
 ];
 
+/**
+ * Detailed screening metric definitions, threshold boundaries, benchmark medians,
+ * and strategy presets mapped by industry sector.
+ */
 export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
+  // =========================================================================
+  // 1. TECHNOLOGY & SAAS CRITERIA
+  // =========================================================================
   tech: {
     industryId: 'tech',
     metrics: [
@@ -163,6 +190,9 @@ export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
     ]
   },
 
+  // =========================================================================
+  // 2. BANKING & BFSI CRITERIA
+  // =========================================================================
   banking: {
     industryId: 'banking',
     metrics: [
@@ -262,6 +292,9 @@ export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
     ]
   },
 
+  // =========================================================================
+  // 3. HEALTHCARE & PHARMA CRITERIA
+  // =========================================================================
   healthcare: {
     industryId: 'healthcare',
     metrics: [
@@ -340,6 +373,9 @@ export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
     ]
   },
 
+  // =========================================================================
+  // 4. FMCG & CONSUMER GOODS CRITERIA
+  // =========================================================================
   fmcg: {
     industryId: 'fmcg',
     metrics: [
@@ -418,6 +454,9 @@ export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
     ]
   },
 
+  // =========================================================================
+  // 5. ENERGY & UTILITIES CRITERIA
+  // =========================================================================
   energy: {
     industryId: 'energy',
     metrics: [
@@ -496,6 +535,9 @@ export const INDUSTRY_CRITERIA: Record<IndustryId, IndustryCriteriaConfig> = {
     ]
   },
 
+  // =========================================================================
+  // 6. AUTO & MANUFACTURING CRITERIA
+  // =========================================================================
   auto: {
     industryId: 'auto',
     metrics: [

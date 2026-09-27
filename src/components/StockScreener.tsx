@@ -1,32 +1,47 @@
+/**
+ * @file StockScreener.tsx
+ * @description Real-time stock screener table and candidate evaluator for AlphaSelector India.
+ * Filters and ranks equities across chosen sectors against configured threshold criteria,
+ * displaying sector pass/fail badges, expected CAGR, composite quality scores, and basket actions.
+ */
+
 import React, { useState } from 'react';
 import { 
   Search, 
-  Filter, 
   ArrowUpDown, 
-  CheckCircle2, 
   Plus, 
   Check, 
-  Info, 
-  Layers, 
-  Sparkles,
-  TrendingUp,
-  AlertTriangle,
-  ArrowRight
+  AlertTriangle, 
+  ArrowRight 
 } from 'lucide-react';
-import { IndustryId, Market, ScoredStock, Stock } from '../types';
+import { IndustryId, ScoredStock, Stock } from '../types';
 import { INDUSTRIES, INDUSTRY_CRITERIA } from '../data/industryCriteria';
 import { formatCurrency } from '../utils/calculator';
 
+/**
+ * Properties for the StockScreener component.
+ */
 interface StockScreenerProps {
+  /** Array of evaluated stocks enriched with scores and pass/fail diagnostics */
   scoredStocks: ScoredStock[];
+  /** Array of currently chosen industry sector IDs */
   selectedIndustries: IndustryId[];
+  /** Currently selected portfolio basket stocks */
   basket: Stock[];
+  /** Callback to add or remove an equity from the portfolio basket */
   onToggleBasket: (stock: Stock) => void;
+  /** Callback to inspect a stock in detail inside the diagnostics modal */
   onInspectStock: (stock: ScoredStock) => void;
+  /** Callback to bulk-add all stocks that passed 100% of criteria to the basket */
   onAddAllMatches: (stocks: Stock[]) => void;
+  /** Callback to navigate forward to the portfolio basket view */
   onProceedToBasket: () => void;
 }
 
+/**
+ * StockScreener renders the interactive screening results list with real-time text search,
+ * match filtering, multi-parameter sorting, and 1-click basket synthesis.
+ */
 export const StockScreener: React.FC<StockScreenerProps> = ({
   scoredStocks,
   selectedIndustries,
@@ -40,14 +55,14 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
   const [filterMode, setFilterMode] = useState<'all' | 'matches'>('all');
   const [sortBy, setSortBy] = useState<'score' | 'cagr' | 'marketCap' | 'price'>('score');
 
-  // Filter and sort stocks
+  // Filter and sort stocks according to active criteria, mode, and search terms
   const filteredStocks = scoredStocks
     .filter((stock) => {
       // Must belong to selected industries
       if (!selectedIndustries.includes(stock.industry)) return false;
       // Filter matches only if toggled
       if (filterMode === 'matches' && !stock.isMatch) return false;
-      // Search query
+      // Search query filter (matches name or ticker)
       if (searchQuery.trim() !== '') {
         const query = searchQuery.toLowerCase();
         return (
@@ -77,7 +92,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by company or ticker (e.g., TCS, HDFC, MSFT)..."
+              placeholder="Search by company or ticker (e.g., TCS, HDFC, Infosys)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60"
@@ -90,7 +105,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
             <div className="flex items-center bg-slate-950/80 rounded-xl p-1 border border-slate-800 text-xs">
               <button
                 onClick={() => setFilterMode('all')}
-                className={`px-3 py-1 rounded-lg font-medium transition-all ${
+                className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
                   filterMode === 'all'
                     ? 'bg-slate-800 text-white shadow-sm font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
@@ -100,7 +115,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
               </button>
               <button
                 onClick={() => setFilterMode('matches')}
-                className={`px-3 py-1 rounded-lg font-medium transition-all ${
+                className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
                   filterMode === 'matches'
                     ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
                     : 'text-slate-400 hover:text-slate-200'
@@ -129,7 +144,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
             {matchingStocks.length > 0 && (
               <button
                 onClick={() => onAddAllMatches(matchingStocks)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition-colors"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition-colors cursor-pointer"
                 title="Add all stocks passing criteria to your investment basket"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -171,7 +186,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
           </p>
           <button
             onClick={() => setFilterMode('all')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer"
           >
             Show All Ranked Candidates
           </button>
@@ -270,14 +285,14 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
                   <div className="flex items-center space-x-2 shrink-0 self-end lg:self-center">
                     <button
                       onClick={() => onInspectStock(stock)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+                      className="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors cursor-pointer"
                     >
                       Diagnostics
                     </button>
 
                     <button
                       onClick={() => onToggleBasket(stock)}
-                      className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
+                      className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer ${
                         isInBasket
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/40'
                           : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20'
@@ -322,7 +337,7 @@ export const StockScreener: React.FC<StockScreenerProps> = ({
 
           <button
             onClick={onProceedToBasket}
-            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all"
+            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
           >
             <span>Configure Weights & Forecast</span>
             <ArrowRight className="w-4 h-4" />

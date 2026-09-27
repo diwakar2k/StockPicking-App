@@ -1,15 +1,35 @@
+/**
+ * @file AccessGate.tsx
+ * @description Security access gatekeeper component for AlphaSelector India.
+ * Restricts application usage to authorized reviewers with link-only access tokens
+ * or manual verification passcodes.
+ */
+
 import React, { useState } from 'react';
 import { Lock, KeyRound, ArrowRight, ShieldCheck, TrendingUp, AlertCircle } from 'lucide-react';
 
+/**
+ * Properties for the AccessGate component.
+ */
 interface AccessGateProps {
+  /** Callback invoked once authorization is successfully established */
   onUnlock: () => void;
+  /** Secret access key string required to grant access */
   expectedKey: string;
 }
 
+/**
+ * AccessGate component displays an authentication modal when visitors access the root URL
+ * without the appropriate link query parameters or active session.
+ */
 export const AccessGate: React.FC<AccessGateProps> = ({ onUnlock, expectedKey }) => {
   const [inputKey, setInputKey] = useState('');
   const [error, setError] = useState(false);
 
+  /**
+   * Handles manual passcode submission, verifies match (case-insensitive),
+   * sets the session flag, and unlocks the application.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputKey.trim().toLowerCase() === expectedKey.toLowerCase()) {
@@ -22,7 +42,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onUnlock, expectedKey })
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background glow effects */}
+      {/* Background ambient glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 

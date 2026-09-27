@@ -1,15 +1,35 @@
+/**
+ * @file Header.tsx
+ * @description Top navigation header for AlphaSelector India.
+ * Provides application branding, step-by-step workflow navigation tabs (1. Industries,
+ * 2. Criteria & Screener, 3. Portfolio Basket, 4. Corpus Forecaster), private sharing triggers,
+ * and global reset actions.
+ */
+
 import React from 'react';
 import { Layers, Sliders, PieChart, TrendingUp, RefreshCw, Share2 } from 'lucide-react';
 
+/**
+ * Properties for the Header navigation component.
+ */
 interface HeaderProps {
+  /** Identifier of the currently active navigation view tab */
   activeTab: 'industries' | 'screener' | 'basket' | 'forecaster';
+  /** Callback fired when user switches the navigation tab */
   onTabChange: (tab: 'industries' | 'screener' | 'basket' | 'forecaster') => void;
+  /** Total count of active industry sectors selected */
   selectedIndustriesCount: number;
+  /** Total number of equities currently held in the portfolio basket */
   basketCount: number;
+  /** Callback to reset all selections, criteria, and filters back to defaults */
   onReset: () => void;
+  /** Callback to display the private access share link dialog */
   onOpenShare: () => void;
 }
 
+/**
+ * Main application navigation header with desktop and responsive mobile layouts.
+ */
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
@@ -38,8 +58,9 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Desktop Navigation Tabs */}
           <nav className="hidden md:flex items-center space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80">
+            {/* Step 1: Industry Selection */}
             <button
               onClick={() => onTabChange('industries')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -59,6 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
+            {/* Step 2: Criteria & Screener */}
             <button
               onClick={() => onTabChange('screener')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -71,6 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span>2. Criteria & Screener</span>
             </button>
 
+            {/* Step 3: Portfolio Basket */}
             <button
               onClick={() => onTabChange('basket')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -90,6 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
+            {/* Step 4: Corpus Forecaster */}
             <button
               onClick={() => onTabChange('forecaster')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${

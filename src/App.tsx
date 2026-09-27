@@ -1,3 +1,10 @@
+/**
+ * @file App.tsx
+ * @description Main application root and orchestration component for AlphaSelector India.
+ * Coordinates global state management, access authentication, sector criteria calibrations,
+ * real-time scoring, portfolio basket synthesis, and multi-year corpus forecasting.
+ */
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Database } from 'lucide-react';
 import { Header } from './components/Header';
@@ -15,10 +22,20 @@ import { INDUSTRIES, INDUSTRY_CRITERIA } from './data/industryCriteria';
 import { evaluateStock } from './utils/calculator';
 import { loadStocks, saveStocks, resetStocksToDefault } from './utils/dataStorage';
 
+/**
+ * Default access key required to unlock the private feedback deployment.
+ */
 const DEFAULT_ACCESS_KEY = 'alpha-feedback-2026';
 
+/**
+ * Root Application component orchestrating navigation, state persistence, and modal dialogs.
+ */
 export function App() {
-  // Check authorization via URL param (?access=...) or existing session
+  /**
+   * Authorization State:
+   * Checks whether the user arrived with a valid URL token (`?access=alpha-feedback-2026`)
+   * or possesses an existing active browser session.
+   */
   const [isAuthorized, setIsAuthorized] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -32,6 +49,7 @@ export function App() {
     return false;
   });
 
+  // Navigation and Modal Visibility States
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'industries' | 'screener' | 'basket' | 'forecaster'>('industries');
   
@@ -39,10 +57,10 @@ export function App() {
   const [selectedIndustries, setSelectedIndustries] = useState<IndustryId[]>(['tech', 'banking', 'fmcg']);
   const [activeCriteriaIndustry, setActiveCriteriaIndustry] = useState<IndustryId>('tech');
 
-  // Stock universe persisted in localStorage
+  // Stock fundamental universe loaded from localStorage
   const [stocks, setStocks] = useState<Stock[]>(() => loadStocks());
 
-  // Industry-specific criteria thresholds
+  // Industry-specific criteria thresholds initialized to default benchmark thresholds
   const [thresholds, setThresholds] = useState<Record<IndustryId, Record<string, number>>>(() => {
     const initial: Record<IndustryId, Record<string, number>> = {
       tech: {},
@@ -60,23 +78,26 @@ export function App() {
     return initial;
   });
 
-  // Selected stocks basket with weights
+  // Selected portfolio basket items with target weights
   const [basket, setBasket] = useState<PortfolioItem[]>([]);
   
-  // Drill-down stock modal
+  // Currently inspected stock for deep-dive diagnostics modal
   const [inspectedStock, setInspectedStock] = useState<ScoredStock | null>(null);
 
-  // Data update & assessment methodology modal
+  // Data update and assessment methodology modal state
   const [isDataModalOpen, setIsDataModalOpen] = useState<boolean>(false);
 
-  // Sync active criteria industry if current active is deselected
+  /**
+   * Effect: Ensure the active criteria sector tab remains valid if the current
+   * sector is toggled off in the industries list.
+   */
   useEffect(() => {
     if (selectedIndustries.length > 0 && !selectedIndustries.includes(activeCriteriaIndustry)) {
       setActiveCriteriaIndustry(selectedIndustries[0]);
     }
   }, [selectedIndustries, activeCriteriaIndustry]);
 
-  // If not authorized, display the access gate
+  // If visitor is unauthenticated, render the link-only access gate
   if (!isAuthorized) {
     return (
       <AccessGate
@@ -86,18 +107,24 @@ export function App() {
     );
   }
 
-  // Handle stock dataset updates (e.g. from live sync or manual editing)
+  /**
+   * Handles stock dataset updates (e.g. from live price refresh or fundamental edits)
+   * and synchronizes with localStorage and existing basket holdings.
+   */
   const handleUpdateStocks = (newStocks: Stock[]) => {
     setStocks(newStocks);
     saveStocks(newStocks);
-    // Also update any stocks in the basket if their data changed
+    // Update any stocks in the basket if their price or fundamentals changed
     setBasket(prev => prev.map(item => {
       const match = newStocks.find(s => s.ticker === item.stock.ticker);
       return match ? { ...item, stock: match } : item;
     }));
   };
 
-  // Evaluate stocks dynamically against active criteria
+  /**
+   * Dynamically evaluates all stocks against active industry criteria and thresholds,
+   * calculating real-time composite quality scores and pass/fail diagnostics.
+   */
   const scoredStocks: ScoredStock[] = useMemo(() => {
     return stocks.map(stock => {
       const config = INDUSTRY_CRITERIA[stock.industry];
@@ -106,17 +133,21 @@ export function App() {
     });
   }, [stocks, thresholds]);
 
-  // Basket stock objects for easy lookup
+  // Array of Stock objects currently held in the portfolio basket
   const basketStocks = useMemo(() => basket.map(b => b.stock), [basket]);
 
-  // Weighted basket CAGR to feed into forecaster
+  /**
+   * Computes the weighted expected CAGR from the portfolio basket to feed into the forecaster.
+   */
   const basketWeightedCAGR = useMemo(() => {
     const totalWeight = basket.reduce((sum, item) => sum + item.weight, 0);
     if (totalWeight <= 0) return 15.0;
     return basket.reduce((sum, item) => sum + item.stock.expectedCAGR * item.weight, 0) / totalWeight;
   }, [basket]);
 
-  // --- Handlers ---
+  // --- Handlers: Industry Selection ---
+
+  /** Toggles an industry sector on or off */
   const handleToggleIndustry = (id: IndustryId) => {
     if (selectedIndustries.includes(id)) {
       if (selectedIndustries.length === 1) {
@@ -129,14 +160,19 @@ export function App() {
     }
   };
 
+  /** Selects all available industries */
   const handleSelectAllIndustries = () => {
     setSelectedIndustries(INDUSTRIES.map(i => i.id));
   };
 
+  /** Resets selected industries to the first default industry */
   const handleClearIndustries = () => {
     setSelectedIndustries([INDUSTRIES[0].id]);
   };
 
+  // --- Handlers: Criteria Calibration ---
+
+  /** Updates an individual metric's threshold filter value */
   const handleUpdateThreshold = (industryId: IndustryId, metricId: string, value: number) => {
     setThresholds(prev => ({
       ...prev,
@@ -147,6 +183,7 @@ export function App() {
     }));
   };
 
+  /** Applies a predefined strategy preset */
   const handleApplyPreset = (industryId: IndustryId, preset: StrategyPreset) => {
     setThresholds(prev => ({
       ...prev,
@@ -157,6 +194,7 @@ export function App() {
     }));
   };
 
+  /** Resets an industry's thresholds back to defaults */
   const handleResetIndustry = (industryId: IndustryId) => {
     const resetObj: Record<string, number> = {};
     INDUSTRY_CRITERIA[industryId].metrics.forEach(m => {
@@ -168,6 +206,9 @@ export function App() {
     }));
   };
 
+  // --- Handlers: Portfolio Basket Management ---
+
+  /** Adds or removes a stock from the portfolio basket, re-equalizing weights */
   const handleToggleBasket = (stock: Stock) => {
     const exists = basket.some(b => b.stock.ticker === stock.ticker);
     if (exists) {
@@ -185,6 +226,7 @@ export function App() {
     }
   };
 
+  /** Bulk-adds all matching stocks to the portfolio basket */
   const handleAddAllMatches = (matchingStocks: Stock[]) => {
     const map = new Map<string, Stock>();
     basket.forEach(item => map.set(item.stock.ticker, item.stock));
@@ -195,6 +237,7 @@ export function App() {
     setBasket(combined.map(s => ({ stock: s, weight: equalW })));
   };
 
+  /** Updates the weighting percentage for a specific holding */
   const handleUpdateWeight = (ticker: string, weight: number) => {
     setBasket(prev => prev.map(item => {
       if (item.stock.ticker === ticker) {
@@ -204,6 +247,7 @@ export function App() {
     }));
   };
 
+  /** Removes a stock from the basket and re-balances weights */
   const handleRemoveStock = (ticker: string) => {
     const next = basket.filter(item => item.stock.ticker !== ticker);
     if (next.length > 0) {
@@ -214,12 +258,14 @@ export function App() {
     }
   };
 
+  /** Distributes weights equally across all holdings in the basket */
   const handleEqualWeight = () => {
     if (basket.length === 0) return;
     const equalW = Math.round(100 / basket.length);
     setBasket(prev => prev.map(item => ({ ...item, weight: equalW })));
   };
 
+  /** Resets the entire application state back to clean defaults */
   const handleResetAll = () => {
     if (confirm('Reset all criteria and stock universe back to curated defaults?')) {
       const def = resetStocksToDefault();
@@ -276,7 +322,7 @@ export function App() {
         </div>
       </div>
 
-      {/* Main Container */}
+      {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* TAB 1: Industry Selection */}
         {activeTab === 'industries' && (

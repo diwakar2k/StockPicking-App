@@ -1,17 +1,35 @@
+/**
+ * @file StockDetailModal.tsx
+ * @description In-depth financial diagnostics and metric analysis modal for AlphaSelector India.
+ * Renders an equity's valuation profile, business model overview, and granular sector-by-sector
+ * metric breakdown compared against user thresholds and Indian industry benchmarks.
+ */
+
 import React from 'react';
-import { X, CheckCircle, XCircle, TrendingUp, DollarSign, Building2, Plus, Check } from 'lucide-react';
-import { Market, ScoredStock } from '../types';
+import { X, CheckCircle, XCircle, Plus, Check } from 'lucide-react';
+import { ScoredStock } from '../types';
 import { INDUSTRY_CRITERIA, INDUSTRIES } from '../data/industryCriteria';
 import { formatCurrency } from '../utils/calculator';
 
+/**
+ * Properties for the StockDetailModal component.
+ */
 interface StockDetailModalProps {
+  /** Inspected stock record, or null when modal is closed */
   stock: ScoredStock | null;
+  /** Callback fired when user dismisses the modal */
   onClose: () => void;
+  /** Whether the currently inspected stock is present in the portfolio basket */
   isInBasket: boolean;
+  /** Callback to add or remove the inspected stock from the portfolio basket */
   onToggleBasket: (stock: ScoredStock) => void;
+  /** Active threshold criteria for the stock's industry sector */
   thresholds: Record<string, number>;
 }
 
+/**
+ * StockDetailModal presents granular fundamental diagnostics for a candidate stock.
+ */
 export const StockDetailModal: React.FC<StockDetailModalProps> = ({
   stock,
   onClose,
@@ -45,7 +63,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -166,14 +184,14 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({
         <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             Close
           </button>
 
           <button
             onClick={() => onToggleBasket(stock)}
-            className={`flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-md ${
+            className={`flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
               isInBasket
                 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30'
                 : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-emerald-500/20'

@@ -1,5 +1,12 @@
+/**
+ * @file publish.cjs
+ * @description Automated deployment helper script for Surge.sh hosting.
+ * Spawns the Surge CLI process to publish the `./dist` folder with automated credentials.
+ */
+
 const { spawn } = require('child_process');
 
+// Generate randomized unique subdomain
 const domain = 'alpha-selector-india-' + Math.random().toString(36).substring(2, 8) + '.surge.sh';
 const distPath = './dist';
 

@@ -1,28 +1,45 @@
+/**
+ * @file PortfolioBasket.tsx
+ * @description Investment basket synthesizer and allocation manager for AlphaSelector India.
+ * Computes portfolio-weighted expected return CAGR, dividend yields, and blended P/E multiples,
+ * supporting custom percentage allocations and 1-click equal weighting.
+ */
+
 import React from 'react';
 import { 
   PieChart, 
   Trash2, 
   Equal, 
-  TrendingUp, 
   ArrowRight, 
-  DollarSign, 
-  Building2,
-  Sparkles,
-  AlertCircle
+  Sparkles, 
+  AlertCircle 
 } from 'lucide-react';
-import { Market, PortfolioItem, Stock } from '../types';
+import { PortfolioItem } from '../types';
 import { INDUSTRIES } from '../data/industryCriteria';
 import { formatCurrency } from '../utils/calculator';
 
+/**
+ * Properties for the PortfolioBasket component.
+ */
 interface PortfolioBasketProps {
+  /** Array of active portfolio holdings and their percentage weights */
   basket: PortfolioItem[];
+  /** Callback to adjust the weight percentage for a specific stock */
   onUpdateWeight: (ticker: string, weight: number) => void;
+  /** Callback to remove a stock from the portfolio basket */
   onRemoveStock: (ticker: string) => void;
+  /** Callback to automatically distribute weights equally across all basket stocks */
   onEqualWeight: () => void;
+  /** Callback to proceed to the compounding corpus forecaster */
   onProceedToForecast: () => void;
+  /** Callback to navigate back to the stock screener */
   onBackToScreener: () => void;
 }
 
+/**
+ * PortfolioBasket synthesizes candidate stocks into an investment portfolio,
+ * aggregating weighted fundamentals to feed directly into the corpus compounding engine.
+ */
 export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
   basket,
   onUpdateWeight,
@@ -43,7 +60,7 @@ export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
         </p>
         <button
           onClick={onBackToScreener}
-          className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20"
+          className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
         >
           Go to Stock Screener
         </button>
@@ -51,10 +68,11 @@ export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
     );
   }
 
-  // Calculate totals and weighted averages
+  // Calculate total portfolio weight and validation status
   const totalWeight = basket.reduce((sum, item) => sum + item.weight, 0);
   const isValidWeight = Math.abs(totalWeight - 100) < 0.5;
 
+  // Compute weighted portfolio fundamentals
   const weightedCAGR = totalWeight > 0 
     ? basket.reduce((sum, item) => sum + (item.stock.expectedCAGR * item.weight), 0) / totalWeight 
     : 0;
@@ -88,7 +106,7 @@ export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={onEqualWeight}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition-colors cursor-pointer"
             >
               <Equal className="w-3.5 h-3.5" />
               <span>Equal Weight</span>
@@ -187,7 +205,7 @@ export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
 
                   <button
                     onClick={() => onRemoveStock(item.stock.ticker)}
-                    className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
                     title="Remove stock from basket"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -217,14 +235,14 @@ export const PortfolioBasket: React.FC<PortfolioBasketProps> = ({
       <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button
           onClick={onBackToScreener}
-          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors text-center"
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors text-center cursor-pointer"
         >
           Add More Stocks
         </button>
 
         <button
           onClick={onProceedToForecast}
-          className="flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all"
+          className="flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
         >
           <span>Forecast Corpus Growth ({weightedCAGR.toFixed(1)}% CAGR)</span>
           <ArrowRight className="w-4 h-4" />

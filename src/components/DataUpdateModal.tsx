@@ -1,29 +1,42 @@
+/**
+ * @file DataUpdateModal.tsx
+ * @description Dataset management, quarterly fundamental results editor, and governance methodology modal.
+ * Enables zero-cost fundamental updates, simulated live market price synchronization,
+ * and JSON dataset export/import for AlphaSelector India.
+ */
+
 import React, { useState } from 'react';
 import { 
   X, 
   RefreshCw, 
   Database, 
   Calendar, 
-  HelpCircle, 
   Download, 
   Upload, 
-  Check, 
-  Plus, 
-  Edit3,
-  TrendingUp,
-  AlertCircle
+  Check 
 } from 'lucide-react';
-import { Market, Stock, IndustryId } from '../types';
-import { INDUSTRIES, INDUSTRY_CRITERIA } from '../data/industryCriteria';
-import { DATA_HISTORY_METHODOLOGY, getLastSyncTime, setLastSyncTime } from '../utils/dataStorage';
+import { Stock } from '../types';
+import { INDUSTRY_CRITERIA } from '../data/industryCriteria';
+import { getLastSyncTime, setLastSyncTime } from '../utils/dataStorage';
 
+/**
+ * Properties for the DataUpdateModal component.
+ */
 interface DataUpdateModalProps {
+  /** Flag determining whether the modal is visible */
   isOpen: boolean;
+  /** Callback to close the modal */
   onClose: () => void;
+  /** Array of active stock fundamental records */
   stocks: Stock[];
+  /** Callback fired when stock fundamentals are updated or imported */
   onUpdateStocks: (newStocks: Stock[]) => void;
 }
 
+/**
+ * DataUpdateModal gives investors full control over corporate earnings updates and price syncs
+ * directly within the browser without requiring external paid financial APIs.
+ */
 export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
   isOpen,
   onClose,
@@ -35,7 +48,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
-  // Editable fields for the selected stock
+  // Editable state buffer for the currently inspected stock
   const currentStock = stocks.find(s => s.ticker === selectedTicker);
   const [editedPrice, setEditedPrice] = useState<number>(currentStock?.price || 0);
   const [editedCAGR, setEditedCAGR] = useState<number>(currentStock?.expectedCAGR || 14);
@@ -43,7 +56,9 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
 
   if (!isOpen) return null;
 
-  // When selected ticker changes
+  /**
+   * Switches the active equity being edited and populates input buffers.
+   */
   const handleSelectTicker = (ticker: string) => {
     setSelectedTicker(ticker);
     const s = stocks.find(st => st.ticker === ticker);
@@ -54,7 +69,9 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
     }
   };
 
-  // Save changes to current stock
+  /**
+   * Commits manual quarterly adjustments for the active stock into the application state.
+   */
   const handleSaveStockChanges = () => {
     if (!currentStock) return;
     const updated = stocks.map(s => {
@@ -73,13 +90,15 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
     setTimeout(() => setSyncStatus(null), 3000);
   };
 
-  // 1-Click Live Sync simulation
+  /**
+   * Simulates a 1-click live market price synchronization and updates the recorded sync timestamp.
+   */
   const handleLiveSync = () => {
     setIsSyncing(true);
     setSyncStatus('Fetching latest market updates...');
 
     setTimeout(() => {
-      // Simulate live price update with ±0.5% - 2% jitter
+      // Simulate live price update with realistic market jitter (±0.5% - 2%)
       const now = new Date();
       const updated = stocks.map(s => {
         const jitter = (Math.random() * 0.04 - 0.02); // -2% to +2%
@@ -101,7 +120,9 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
     }, 1200);
   };
 
-  // Export JSON
+  /**
+   * Exports the complete universe of stocks as an editable JSON file.
+   */
   const handleExportJSON = () => {
     const jsonStr = JSON.stringify(stocks, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -113,7 +134,9 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  // Import JSON
+  /**
+   * Imports a user-supplied JSON dataset to update the local stock universe.
+   */
   const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -153,7 +176,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -163,7 +186,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
         <div className="flex items-center space-x-2 px-6 pt-4 border-b border-slate-800/80 bg-slate-950/30">
           <button
             onClick={() => setActiveTab('methodology')}
-            className={`pb-3 text-xs font-semibold border-b-2 transition-all ${
+            className={`pb-3 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === 'methodology'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -173,7 +196,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('edit')}
-            className={`pb-3 text-xs font-semibold border-b-2 transition-all ${
+            className={`pb-3 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === 'edit'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -183,7 +206,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('importExport')}
-            className={`pb-3 text-xs font-semibold border-b-2 transition-all ${
+            className={`pb-3 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === 'importExport'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -257,7 +280,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
                 <button
                   onClick={handleLiveSync}
                   disabled={isSyncing}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
                   <span>{isSyncing ? 'Syncing...' : '1-Click Live Price Refresh'}</span>
@@ -335,7 +358,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
 
                   <button
                     onClick={handleSaveStockChanges}
-                    className="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20"
+                    className="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
                   >
                     <Check className="w-4 h-4" />
                     <span>Save {currentStock.ticker} Fundamentals</span>
@@ -355,7 +378,7 @@ export const DataUpdateModal: React.FC<DataUpdateModalProps> = ({
                 </p>
                 <button
                   onClick={handleExportJSON}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Export Universe JSON</span>

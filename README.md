@@ -70,29 +70,86 @@ StockPicking App/
 │   └── main.tsx                    # React 19 bootstrap entry point
 ├── deploy-with-email.ps1           # 1-click Surge deployment script
 ├── push-to-github.ps1              # Automated git version control & GitHub push script
+├── run-locally.bat                 # 1-click Windows desktop launcher (zero terminal commands)
 ├── vite.config.ts                  # Vite build configuration with relative base paths
 └── package.json                    # Project dependencies and npm lifecycle scripts
 ```
 
 ---
 
-## Running Locally
+## How to Use This App
 
-```bash
-# 1. Install dependencies
-npm install
+### Option 1: Instant Online Access (No Installation Needed!)
 
-# 2. Start the local development server
-npm run dev
+If you just want to use the app without downloading or installing any software, it is already live on the web:
 
-# 3. Build for production and verify type safety
-npm run build
+👉 **[Launch AlphaSelector India](https://diwakar2k.github.io/StockPicking-App/?access=alpha-feedback-2026)**
 
-# 4. Preview the production build locally
-npm run preview
-```
+- Works directly in your browser on PC, Mac, iPad, iPhone, and Android.
+- If prompted for an Access Key, enter: `alpha-feedback-2026`
 
-Open [http://localhost:5173/](http://localhost:5173/) in your web browser.
+---
+
+### Option 2: Run on Your Computer (Step-by-Step for Non-Coders)
+
+You can run this app entirely offline on your personal computer in just a few simple steps.
+
+#### Method A: 1-Click Launch on Windows (Super Easy)
+
+1. **Install Node.js (Only needed once)**:
+   - Download the free recommended **LTS** installer from [nodejs.org](https://nodejs.org/).
+   - Open the downloaded installer file and click **Next** through the setup prompts until finished.
+
+2. **Download the App**:
+   - Go to the GitHub repository: [https://github.com/diwakar2k/StockPicking-App](https://github.com/diwakar2k/StockPicking-App)
+   - Click the green **"<> Code"** button near the top right, then click **"Download ZIP"**.
+   - Right-click the downloaded `.zip` file and select **"Extract All..."** to unzip it to a folder (such as your Desktop or Documents).
+
+3. **Double-Click to Start**:
+   - Inside the extracted folder, double-click the **`run-locally.bat`** file.
+   - The script will automatically download the necessary packages on first run and launch your web browser straight to the app at `http://localhost:5173/`!
+   - When you are done using the app, simply close the black window.
+
+---
+
+#### Method B: Standard Setup (Windows, Mac, Linux)
+
+If you prefer using the terminal or are on a Mac/Linux computer:
+
+1. **Install Node.js**:
+   - Ensure you have **Node.js** installed (version 18 or higher) from [nodejs.org](https://nodejs.org/).
+
+2. **Get the Code**:
+   - **Using Git**:
+     ```bash
+     git clone https://github.com/diwakar2k/StockPicking-App.git
+     cd StockPicking-App
+     ```
+   - **Or Without Git**: Download the ZIP from GitHub, extract it, and open your Terminal / Command Prompt inside that folder.
+     > *Tip on Windows:* Open the folder in File Explorer, click on the address bar at the top, type `cmd` or `powershell`, and press `Enter`.  
+     > *Tip on Mac:* Open Terminal, type `cd ` (with a trailing space), drag the folder from Finder into Terminal, and press `Enter`.
+
+3. **Install the Required Packages (One-Time Only)**:
+   Type this command and press Enter:
+   ```bash
+   npm install
+   ```
+   *(This downloads the free charting libraries, React, and styles into the project).*
+
+4. **Start the App**:
+   Type this command and press Enter:
+   ```bash
+   npm run dev
+   ```
+
+5. **Open in Your Browser**:
+   Open Chrome, Safari, Edge, or Firefox and go to:
+   ```
+   http://localhost:5173/
+   ```
+
+6. **How to Stop the App**:
+   When you want to stop the local server, click on your terminal window and press `Ctrl + C` (or `Cmd + C` on Mac).
 
 ---
 

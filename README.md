@@ -1,5 +1,8 @@
 # AlphaSelector India (StockPicking App)
 
+> **Created & Maintained by [Diwakar Sharma](https://github.com/diwakar2k)**  
+> GitHub Profile: [@diwakar2k](https://github.com/diwakar2k) | Repository: [StockPicking-App](https://github.com/diwakar2k/StockPicking-App)
+
 An institutional-grade, industry-adaptive stock screener and compounding wealth forecasting application built specifically for the **Indian Stock Market (NSE / BSE in ₹)**.
 
 ## Key Features
@@ -123,3 +126,13 @@ Whenever you make edits to this project:
 
 3. **Automatic Deployment**:
    Once pushed, GitHub Actions immediately checks out the code, executes `npm ci` and `npm run build`, and publishes the latest version to GitHub Pages.
+
+---
+
+## Author & Maintainer
+
+- **Author**: Diwakar Sharma
+- **GitHub Profile**: [https://github.com/diwakar2k](https://github.com/diwakar2k)
+- **Repository**: [https://github.com/diwakar2k/StockPicking-App](https://github.com/diwakar2k/StockPicking-App)
+- **License**: MIT
+

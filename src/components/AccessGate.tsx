@@ -113,9 +113,19 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onUnlock, expectedKey })
           </button>
         </form>
 
-        <div className="pt-2 border-t border-slate-800/60 flex items-center justify-center space-x-2 text-[11px] text-slate-500">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Link-restricted feedback environment</span>
+        <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
+          <div className="flex items-center space-x-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Link-restricted feedback environment</span>
+          </div>
+          <a
+            href="https://github.com/diwakar2k"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-400 hover:text-emerald-400 font-medium transition-colors"
+          >
+            by Diwakar Sharma
+          </a>
         </div>
       </div>
     </div>

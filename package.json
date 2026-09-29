@@ -1,7 +1,15 @@
 {
   "name": "stock-selector-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": {
+    "name": "Diwakar Sharma",
+    "url": "https://github.com/diwakar2k"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diwakar2k/StockPicking-App.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
